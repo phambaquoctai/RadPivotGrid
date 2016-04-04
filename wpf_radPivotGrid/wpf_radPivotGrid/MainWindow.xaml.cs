@@ -81,6 +81,17 @@ namespace wpf_radPivotGrid
 
             return PivotData;
         }
+
+        private void ListBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            LocalDataSourceProvider dataProvider = this.Resources["LocalDataProvider"] as LocalDataSourceProvider;
+            if (dataProvider != null)
+            {
+                FilterItem filter = FiltersSelection.SelectedItem as FilterItem;
+                dataProvider.ColumnGroupDescriptions[0].GroupFilter = filter.GroupFilter;
+                dataProvider.Refresh();
+            }
+        }
     }
 
 }

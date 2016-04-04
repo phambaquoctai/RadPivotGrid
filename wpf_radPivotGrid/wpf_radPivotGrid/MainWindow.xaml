@@ -6,6 +6,7 @@
         xmlns:pivot="http://schemas.telerik.com/2008/xaml/presentation/pivot"
         xmlns:telerik="http://schemas.telerik.com/2008/xaml/presentation"
         xmlns:local="clr-namespace:wpf_radPivotGrid"
+        xmlns:sys="clr-namespace:System;assembly=mscorlib"
         mc:Ignorable="d"
         Title="MainWindow" Height="350" Width="525">
     <Window.Resources>
@@ -21,8 +22,51 @@
                 <pivot:PropertyAggregateDescription PropertyName="Quantity"/>
             </pivot:LocalDataSourceProvider.AggregateDescriptions>
         </pivot:LocalDataSourceProvider>
+
+        <local:FiltersCollection x:Key="Filters">
+            <local:FilterItem DisplayName="&lt;none&gt;" />
+            <local:FilterItem DisplayName="The name is in the list: 'March', 'April'">
+                <local:FilterItem.GroupFilter>
+                    <pivot:LabelGroupFilter>
+                        <pivot:LabelGroupFilter.Condition>
+                            <pivot:SetCondition Comparison="Includes">
+                                <pivot:SetCondition.Items>
+                                    <pivot:MonthGroup Month="3"/>
+                                    <pivot:MonthGroup Month="4"/>
+                                </pivot:SetCondition.Items>
+                            </pivot:SetCondition>
+                        </pivot:LabelGroupFilter.Condition>
+                    </pivot:LabelGroupFilter>
+                </local:FilterItem.GroupFilter>
+            </local:FilterItem>
+            <local:FilterItem DisplayName="The Grand Total is greater than 13.30">
+                <local:FilterItem.GroupFilter>
+                    <pivot:ValueGroupFilter AggregateIndex="0">
+                        <pivot:ValueGroupFilter.Condition>
+                            <pivot:ComparisonCondition Condition="IsGreaterThan">
+                                <pivot:ComparisonCondition.Than>
+                                    <sys:Double>13.30</sys:Double>
+                                </pivot:ComparisonCondition.Than>
+                            </pivot:ComparisonCondition>
+                        </pivot:ValueGroupFilter.Condition>
+                    </pivot:ValueGroupFilter>
+                </local:FilterItem.GroupFilter>
+            </local:FilterItem>
+        </local:FiltersCollection>
     </Window.Resources>
     <Grid>
-        <pivot:RadPivotGrid Name="radPivotGrid1" DataProvider="{StaticResource LocalDataProvider}" />
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="3*"/>
+            <ColumnDefinition Width="*"/>
+        </Grid.ColumnDefinitions>
+        
+        <pivot:RadPivotGrid Grid.Column="0" Name="radPivotGrid1" DataProvider="{StaticResource LocalDataProvider}" />
+        <ListBox x:Name="FiltersSelection" Grid.Column="1" ItemsSource="{StaticResource Filters}" SelectionChanged="ListBox_SelectionChanged">
+            <ListBox.ItemTemplate>
+                <DataTemplate>
+                    <TextBlock Text="{Binding DisplayName}" TextWrapping="Wrap" Margin="2 3"/>
+                </DataTemplate>
+            </ListBox.ItemTemplate>
+        </ListBox>
     </Grid>
 </Window>
